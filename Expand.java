@@ -6,9 +6,29 @@ import java.util.StringTokenizer;
 // Array (llamar a archivo1) y me devuelva o un objeto o un contenido
 // Arregloculiao["archivo1"] => Objeto o un contenido
 
-public class Testeo {
+public class Expand {
 	public String[] archivos;
 	public Hashtable<String, String> FileArray = new Hashtable<String, String>();
+
+	public Expand (String[] filenames){
+		this.archivos=filenames;
+	}
+
+	public boolean hasRefference(String file){
+		String content = FileArray.get(file);
+		StringTokenizer reference = new StringTokenizer(content, " \n");
+		boolean refference = false;
+		while (reference.hasMoreTokens()){
+			String ref = reference.nextToken();
+			ref = ref.trim();
+			int a = ref.indexOf("<<<");
+			int b = ref.indexOf(">>>");
+			if (a < b && a >=0 && b >= 0){
+				return true;
+			}	
+		}
+		return false;
+	}
 
 	public String replaceRefference(String file){
 		try{
@@ -34,11 +54,22 @@ public class Testeo {
 			return "0";
 
 		}
-		
-
 	}
 
-	public void Expand() throws FileNotFoundException{
+	public void print(){
+		if (this.hasRefference(this.archivos[0])){ 
+			// tiene referencias y solo imprimimos el primero ??
+			System.out.println(this.replaceRefference(this.archivos[0]));
+		}
+		else{ 
+			// Si no tiene referencias la suma de los largos deberia ser menor que el largo del primero
+			for (int i=0;i<this.archivos.length ; i++ ) {
+				System.out.println(this.replaceRefference(this.archivos[i]));
+			}
+		}
+	}
+
+	public void Expandir() throws FileNotFoundException{
 		for (int i=0; i<this.archivos.length; i++) {
 			String content = "";
 			// Abrir Archivo(cómo lo abro?)
@@ -54,25 +85,10 @@ public class Testeo {
 			FileArray.put(archivos[i],content);
 		}
 
-		// for (int i=0; i<this.archivos.length; i++){
-			System.out.println(this.replaceRefference(this.archivos[0]));
-		// }
-		
-		// String text = "esto es un texto con <<<referencia>>> \n esto es otro texto con otra <<<reference>>>";
-		
-			
-			
-		// }
+		this.print();
 	}
 	public static void main(String[] args) throws FileNotFoundException {
-		Testeo a = new Testeo();
-		a.archivos = args;
-		a.Expand();
+		Expand a = new Expand(args);
+		a.Expandir();
 	}
-}
-
-
-class Archivo {
-	public String filename;
-	public String content;
 }
